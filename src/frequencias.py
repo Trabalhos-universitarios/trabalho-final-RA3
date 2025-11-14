@@ -1,6 +1,5 @@
 
 from collections import Counter
-import operator
 
 def gerar_tabela_frequencias(texto: str) -> dict[str, int]:
     """
@@ -10,20 +9,14 @@ def gerar_tabela_frequencias(texto: str) -> dict[str, int]:
         texto: O texto de entrada.
 
     Returns:
-        Um dicionário com os caracteres e suas frequências,
-        ordenado alfabeticamente.
+        Um dicionário com os caracteres e suas frequências.
     """
-    # Conta a frequência de cada caractere
-    frequencias = Counter(texto)
-    
-    # Ordena o dicionário pela chave (caractere) em ordem alfabética
-    frequencias_ordenadas = dict(sorted(frequencias.items(), key=operator.itemgetter(0)))
-    
-    return frequencias_ordenadas
+    return Counter(texto)
 
 def imprimir_tabela(frequencias: dict[str, int]):
     """
-    Imprime a tabela de frequências de forma legível no console.
+    Imprime a tabela de frequências de forma legível no console,
+    ordenada da maior para a menor frequência.
 
     Args:
         frequencias: O dicionário de frequências.
@@ -31,7 +24,11 @@ def imprimir_tabela(frequencias: dict[str, int]):
     print("--- Tabela de Frequências ---")
     print("Caractere | Frequência")
     print("---------------------------")
-    for char, freq in frequencias.items():
+    
+    # Ordena os itens do dicionário pela frequência (valor), em ordem decrescente
+    sorted_freq = sorted(frequencias.items(), key=lambda item: item[1], reverse=True)
+    
+    for char, freq in sorted_freq:
         # Trata caracteres especiais para exibição
         char_display = repr(char)[1:-1]
         if char == ' ':
