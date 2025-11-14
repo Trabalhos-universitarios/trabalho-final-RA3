@@ -35,10 +35,10 @@ def carregar_arquivo(caminho: str):
         print(f"\nOcorreu um erro inesperado: {e}")
         return False
 
-def run_with_spinner(message, func, *args):
+def run_with_live_timer(message, func, *args):
     """
-    Exibe uma animação de spinner enquanto a função 'func' é executada em uma thread.
-    Relança exceções que ocorrerem na thread.
+    Exibe uma animação de spinner e um cronômetro em tempo real enquanto a função 'func' é executada.
+    Retorna a duração total da execução.
     """
     exception = None
     def target_wrapper():
@@ -51,19 +51,29 @@ def run_with_spinner(message, func, *args):
     thread = threading.Thread(target=target_wrapper)
     thread.start()
 
+    start_time = time.time()
     spinner_chars = "||"
     idx = 0
+    status_line = ""
+
     while thread.is_alive():
+        elapsed_time = time.time() - start_time
         char = spinner_chars[idx % len(spinner_chars)]
-        print(f" {message}... {char}", end='\r')
+        status_line = f" {message}... {char} ({elapsed_time:.2f}s)"
+        print(status_line, end='\r')
         time.sleep(0.1)
         idx += 1
     
     thread.join()
-    print(" " * (len(message) + 15), end='\r')
+    final_time = time.time() - start_time
+    
+    # Limpa a linha de status
+    print(" " * (len(status_line) + 5), end='\r')
 
     if exception:
         raise exception
+    
+    return final_time
 
 # --- Funções do Menu ---
 
@@ -124,18 +134,30 @@ def menu_compactar():
     if not arquivo_carregado:
         print("Erro: Nenhum arquivo carregado para compactar.")
         return
-    
-    nome_base, _ = os.path.splitext(arquivo_carregado)
-    arquivo_saida = f"{nome_base}.huff"
-    
+
+    nome_saida_base = input("Digite o nome para o arquivo de saída (deixe em branco para usar o nome original): ")
+
+    # Garante que o arquivo de saída seja criado no mesmo diretório do arquivo de entrada
+    dir_entrada = os.path.dirname(arquivo_carregado)
+    if not dir_entrada:
+        dir_entrada = '.' # Garante que funcione se o arquivo estiver no diretório atual
+
+    if not nome_saida_base.strip():
+        nome_base_original = os.path.basename(arquivo_carregado)
+        nome_saida_base, _ = os.path.splitext(nome_base_original)
+
+    arquivo_saida = os.path.join(dir_entrada, f"{nome_saida_base}.huff")
+
     try:
-        run_with_spinner(
+        print(f"Iniciando a compactação de '{os.path.basename(arquivo_carregado)}' para '{os.path.basename(arquivo_saida)}'...")
+        duration = run_with_live_timer(
             "Compactando",
             compactar,
             arquivo_carregado,
             arquivo_saida
         )
         print(f"Arquivo '{arquivo_saida}' gerado com sucesso.")
+        print(f"Tempo de execução: {duration:.4f} segundos.")
     except Exception as e:
         print(f"\nOcorreu um erro durante a compactação: {e}")
 
@@ -152,15 +174,18 @@ def menu_descompactar():
     arquivo_saida = f"{nome_base}_recuperado.txt"
 
     try:
-        run_with_spinner(
+        print(f"Iniciando a descompactação de '{os.path.basename(arquivo_entrada)}'...")
+        duration = run_with_live_timer(
             "Descompactando",
             descompactar,
             arquivo_entrada,
             arquivo_saida
         )
         print(f"Arquivo '{arquivo_saida}' gerado com sucesso.")
+        print(f"Tempo de execução: {duration:.4f} segundos.")
     except Exception as e:
         print(f"\nOcorreu um erro durante a descompactação: {e}")
+
 
 def menu_ler_arquivo_texto():
     """Opção 1: Lê um arquivo de texto."""
