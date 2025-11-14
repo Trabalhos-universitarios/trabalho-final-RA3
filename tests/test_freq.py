@@ -8,13 +8,14 @@ class TestFrequencias(unittest.TestCase):
         """Testa se a tabela de frequências é gerada corretamente."""
         texto = "banana bandada"
         
-        # Dicionário esperado, ordenado alfabeticamente
+        # O resultado é um Counter, que se comporta como um dicionário.
+        # A ordem dos itens não importa para a validação do teste.
         esperado = {
-            ' ': 1,
             'a': 6,
+            'n': 3,
             'b': 2,
             'd': 2,
-            'n': 3
+            ' ': 1
         }
         
         resultado = gerar_tabela_frequencias(texto)

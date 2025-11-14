@@ -1,6 +1,5 @@
 
 import heapq
-import json
 from typing import Optional, Dict, List, Union
 
 # --- Estrutura do Nó e da Árvore ---
@@ -103,13 +102,5 @@ def imprimir_arvore(raiz: Optional[Node], prefixo="", is_ultimo=True):
             elif raiz.left:
                 imprimir_arvore(raiz.left, prefixo, True)
 
-# --- Serialização ---
 
-def serializar_tabela(frequencias: Dict[str, int]) -> str:
-    """Serializa a tabela de frequências para JSON."""
-    return json.dumps(frequencias)
-
-def deserializar_tabela(data: str) -> Dict[str, int]:
-    """Deserializa a tabela de frequências a partir de JSON."""
-    return json.loads(data)
 

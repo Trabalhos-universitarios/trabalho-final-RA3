@@ -1,5 +1,5 @@
 import json
-from typing import Dict, Iterator
+from typing import Dict
 
 from src.frequencias import gerar_tabela_frequencias
 from src.huffman_tree import construir_arvore, gerar_codigos
@@ -27,38 +27,8 @@ def compactar(caminho_entrada: str, caminho_saida: str):
     raiz = construir_arvore(frequencias)
     codigos = gerar_codigos(raiz)
 
-    cabecalho_json = json.dumps(frequencias)
-    cabecalho_bytes = cabecalho_json.encode('utf-8')
-
-    with open(caminho_saida, 'wb') as f:
-        # Escreve o cabeçalho
-        f.write(len(cabecalho_bytes).to_bytes(4, 'big'))
-        f.write(cabecalho_bytes)
-
-        # Escreve os dados compactados de forma eficiente
-        bit_buffer = ""
-        for char in texto:
-            bit_buffer += codigos[char]
-            while len(bit_buffer) >= 8:
-                byte_str = bit_buffer[:8]
-                f.write(int(byte_str, 2).to_bytes(1, 'big'))
-                bit_buffer = bit_buffer[8:]
-        
-        # Trata o padding no final
-        if bit_buffer:
-            padding_len = 8 - len(bit_buffer)
-            bit_buffer += '0' * padding_len
-            # O último byte contém a informação de padding no seu valor
-            # A decodificação precisa saber o número total de bits
-            f.write(int(bit_buffer, 2).to_bytes(1, 'big'))
-    
-    # Para a descompactação funcionar, ela precisa saber o número exato de bits
-    # ou o número de caracteres originais. Vamos adicionar o número de caracteres
-    # ao cabeçalho, que é uma abordagem mais robusta.
-
-    # --- REFAZENDO A COMPACTAÇÃO COM A ABORDAGEM CORRETA ---
-
     # O cabeçalho precisa conter as frequências E o número de caracteres
+    # para que a descompactação saiba exatamente quando parar.
     header_data = {
         'frequencias': frequencias,
         'total_chars': len(texto)
@@ -67,9 +37,11 @@ def compactar(caminho_entrada: str, caminho_saida: str):
     cabecalho_bytes = cabecalho_json.encode('utf-8')
 
     with open(caminho_saida, 'wb') as f:
+        # Escreve o tamanho do cabeçalho e o cabeçalho
         f.write(len(cabecalho_bytes).to_bytes(4, 'big'))
         f.write(cabecalho_bytes)
 
+        # Escreve os dados compactados de forma eficiente
         bit_buffer = ""
         for char in texto:
             bit_buffer += codigos[char]
@@ -78,7 +50,7 @@ def compactar(caminho_entrada: str, caminho_saida: str):
                 f.write(byte.to_bytes(1, 'big'))
                 bit_buffer = bit_buffer[8:]
         
-        # Escreve o último byte, se houver bits restantes
+        # Escreve o último byte, se houver bits restantes (com padding)
         if bit_buffer:
             byte = int(bit_buffer.ljust(8, '0'), 2)
             f.write(byte.to_bytes(1, 'big'))
