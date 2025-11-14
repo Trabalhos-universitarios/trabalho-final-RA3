@@ -36,6 +36,37 @@ python3 src/main.py -i caminho/para/seu/arquivo.txt
 
 ---
 
+## 📖 Como Usar (Passo a Passo)
+
+Para ilustrar o uso da ferramenta, siga um fluxo de trabalho completo.
+
+### Passo 1: Iniciar e Carregar um Arquivo
+1. Inicie o programa com `python3 src/main.py`.
+2. No menu, **digite `1`** para "Ler arquivo de texto".
+3. Forneça o caminho para o arquivo (ex: `exemplo.txt`) e pressione Enter.
+4. O menu será recarregado, mostrando o nome do arquivo carregado no topo.
+
+### Passo 2: Analisar o Arquivo (Opcional)
+Com o arquivo carregado, você pode inspecionar as estruturas de dados geradas pelo algoritmo:
+- **Digite `2`** para ver a **Tabela de Frequências**.
+- **Digite `3`** para visualizar a **Árvore de Huffman**.
+- **Digite `4`** para listar a **Tabela de Códigos** de cada caractere.
+
+### Passo 3: Compactar
+1. No menu, **digite `5`** para "Compactar arquivo".
+2. O programa solicitará um nome para o arquivo de saída (ex: `meu_arquivo_compactado`). Se você deixar em branco, ele usará o nome do arquivo original.
+3. Acompanhe a operação com o cronômetro em tempo real. Ao final, o arquivo `.huff` será criado.
+
+### Passo 4: Descompactar
+1. **Digite `6`** para "Descompactar arquivo .huff".
+2. Forneça o caminho para o arquivo compactado (ex: `meu_arquivo_compactado.huff`).
+3. O arquivo será descompactado com o sufixo `_recuperado.txt`. Você pode abri-lo para confirmar que o conteúdo é idêntico ao original.
+
+### Passo 5: Sair
+- Para encerrar, **digite `7`**.
+
+---
+
 ## 📂 Estrutura do Projeto
 
 O código-fonte é modularizado para garantir clareza e manutenibilidade:
